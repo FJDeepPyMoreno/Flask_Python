@@ -12,23 +12,34 @@ class Item(Resource):
 
     @jwt_required()   # We have to authenticate before we call the get method.
     def get(self, name):
-        # Retrive from database .db:
-        connection = sqlite3.connect('data.db')
-        cursor     = connection.cursor()
-        query      = "SELECT * FROM items WHERE name = ?"
-        result     = cursor.execute(query, (name,)).fetchone()
-        connection.close() # Observa que no hacemos 'commit' ya que no estamos modificando la base de datos.
+        result = self.find_by_name(name)        
         if result:
             return {'item': {'name' : result[0], 'price': result[1]}}
         else:
             return {'message': 'item not found'}, 404
+    
+    @classmethod
+    def find_by_name(cls, name):
+        # Retrive from database .db:
+        connection = sqlite3.connect('data.db')
+        cursor     = connection.cursor()
+        query      = "SELECT * FROM items WHERE name = ?"
+        result     = cursor.execute(query, (name,))
+        row        = result.fetchone()
+        connection.close() # Observa que no hacemos 'commit' ya que no estamos modificando la base de datos.
+        return row
 
     def post(self, name):
-        if next(filter(lambda x : x['name'] == name, items), None) is not None:
-            return {'message' : f'An item with name {name} already exists.'}, 400 
+        if self.find_by_name(name):
+            return {'message' : 'An item with name  "{}" already exists'.format(name)}, 400
         data = Item.parser.parse_args() 
         item = {'name': name, 'price': data['price']}
-        items.append(item)
+        connection = sqlite3.connect('data.db')
+        cursor     = connection.cursor()
+        query      = "INSERT INTO items VALUES (?, ?)"
+        cursor.execute(query, (item['name'], item['price']))
+        connection.commit()
+        connection.close() 
         return item, 201
     
     def put(self, name):
