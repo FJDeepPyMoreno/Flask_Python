@@ -8,7 +8,9 @@ from resources.user import UserRegister
 from resources.item import Item, ItemList
 
 app                                          = Flask(__name__)
-app.secret_key                               = 'Paco3351'  # Esta línea debe estar para que '/auth' vaya bien. 
+app.secret_key                               = 'Paco3351'  # Esta línea debe estar para que '/auth' vaya bien.
+app.config['SQLALCHEMY_DATABASE_URI']        = 'sqlite:///data.db'  # Especifica que leeremos la base de datos desde el rrot path
+                                                                    # Es decir, desde donde se lanza este script. 
 app.config['PROPAGATE_EXCEPTIONS']           = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False       # Los cambios en los objetos se transfieren igualmente a la Base de Datos.
 api                                          = Api(app)

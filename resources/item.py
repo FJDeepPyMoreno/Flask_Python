@@ -28,7 +28,7 @@ class Item(Resource):
         item = ItemModel(name, data['price']) 
 
         try:
-            item.insert()
+            item.save_to_db()
             return {'message': f'Item "{item.name}" was inserted on Items database.'}, 201
         except:
             return {'message': f'An error occurred while inserting item: {item.name}'}, 500
@@ -37,29 +37,28 @@ class Item(Resource):
     def put(self, name):
         data        = Item.parser.parse_args()
         item        = ItemModel.find_by_name(name)
-        updatedItem = ItemModel(name, data['price'])
-        if item is not None: 
-            try:         
-                updatedItem.update()
-                return {'message': f'Item "{updatedItem.name}" was updated'}, 201 
-            except:
-                return {'message': 'An error occurred at updating the Item.'}, 500       
+        if item is None:
+            item = ItemModel(name, data['price'])
         else:
-            try:
-                updatedItem.insert()
-                return {'message': f'Item "{updatedItem.name}" was inserted on Items database.'}, 201
-            except:
-                return {'message': 'An error occurred at inserting the Item.'}, 500  
+            item.price = data['price']
+        item.save_to_db()
+        return item.json()
     
     @jwt_required()
     def delete(self, name):
-        connection = sqlite3.connect('data.db')
-        cursor     = connection.cursor()
-        query      = "DELETE FROM items WHERE name = ?"
-        cursor.execute(query, (name,))
-        connection.commit()
-        connection.close()
-        return {'Message': 'Item deleted.'}               
+
+        item = ItemModel.find_by_name(name)
+        if item:
+            item.delete_from_db()
+
+        return {'Message': 'Item deleted.'}
+        # connection = sqlite3.connect('data.db')
+        # cursor     = connection.cursor()
+        # query      = "DELETE FROM items WHERE name = ?"
+        # cursor.execute(query, (name,))
+        # connection.commit()
+        # connection.close()
+        # return {'Message': 'Item deleted.'}               
 
 
 class ItemList(Resource):

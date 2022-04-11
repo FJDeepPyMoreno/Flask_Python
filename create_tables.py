@@ -6,7 +6,7 @@ create_table_users = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, 
                                                    # Cada vez que añadamos un reistro nuevo, el campo 'id' se autoincrementa, por lo
                                                    # que no necesitaremos especificarlo todo el rato
 
-create_table_items = "CREATE TABLE IF NOT EXISTS items (name text, price real)"
+create_table_items = "CREATE TABLE IF NOT EXISTS items (id INTEGER PRIMARY KEY, name text, price real)"
 
 cursor.execute(create_table_users)
 cursor.execute(create_table_items)
@@ -22,10 +22,10 @@ users = [(2, 'rolf', 'ffgt'),
 
 cursor.executemany(insert_user, users)
 
-items = [('arpa', 2350),
-         ('piano', 7730)]
+items = [(1,'arpa', 2350),
+         (2,'piano', 7730)]
 
-insert_item = "INSERT INTO items VALUES (?,?)"
+insert_item = "INSERT INTO items VALUES (?,?,?)"
 
 cursor.executemany(insert_item, items)
 
