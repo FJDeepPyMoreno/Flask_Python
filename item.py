@@ -10,14 +10,6 @@ class Item(Resource):
                         type = float,
                         required = True,
                         help = "This field can not be left blank!")
-
-    @jwt_required()   # We have to authenticate before we call the get method.
-    def get(self, name):
-        result = self.find_by_name(name)        
-        if result:
-            return {'item': {'name' : result[0], 'price': result[1]}}
-        else:
-            return {'message': 'item not found'}, 404
     
     @classmethod
     def find_by_name(cls, name):
@@ -29,30 +21,61 @@ class Item(Resource):
         row        = result.fetchone()
         connection.close() # Observa que no hacemos 'commit' ya que no estamos modificando la base de datos.
         return row
+    
+    @classmethod
+    def insert(cls, item):
+        connection = sqlite3.connect('data.db')
+        cursor     = connection.cursor()
+        query      = "INSERT INTO items VALUES (?, ?)"
+        cursor.execute(query, (item['name'], item['price']))
+        connection.commit()
+        connection.close()
+        return {'message': f'Item {str(item)} was inserted on Items database.'}, 201 
+    
+    @classmethod
+    def update(cls, item):
+        connection = sqlite3.connect('data.db')
+        cursor     = connection.cursor()
+        query      = "UPDATE items SET price = ? WHERE name = ?"
+        cursor.execute(query, (item['price'], item['name']))
+        connection.commit()
+        connection.close()
+        return {'message': f'Item {item["name"]} was updated'}, 201
+    
+    @jwt_required()   # We have to authenticate before we call the get method.
+    def get(self, name):
+        result = self.find_by_name(name)        
+        if result:
+            return {'item': {'name' : result[0], 'price': result[1]}}
+        else:
+            return {'message': 'item not found'}, 404
 
     def post(self, name):
         if self.find_by_name(name):
             return {'message' : 'An item with name  "{}" already exists'.format(name)}, 400
         data = Item.parser.parse_args() 
         item = {'name': name, 'price': data['price']}
-        connection = sqlite3.connect('data.db')
-        cursor     = connection.cursor()
-        query      = "INSERT INTO items VALUES (?, ?)"
-        cursor.execute(query, (item['name'], item['price']))
-        connection.commit()
-        connection.close() 
-        return item, 201
+        try:
+            self.insert(item)
+        except:
+            return {'message': f'An error occurred while inserting item: {str(item)}'}, 500
+                                                                      # No es un error del requester. Seria un Internal Server Error.
     
     def put(self, name):
         data = Item.parser.parse_args()
-        item = next(filter(lambda x : x['name'] == name, items), None)
-        if item is None:
-            new_item = {'name' : name, 'price' : data['price']}
-            items.append(new_item)
-            return new_item
+        item = self.find_by_name(name)
+        updatedItem = {'name' : name, 'price': data['price']}
+        if item is not None: 
+            try:         
+                self.update(updatedItem)
+            except:
+                return {'message': 'An error occurred at updating the Item.'}, 500
+            
         else:
-            item.update(data)
-            return item  
+            try:
+                self.insert(updatedItem)
+            except:
+                return {'message': 'An error occurred at inserting the Item.'}, 500  
     
     @jwt_required()
     def delete(self, name):
