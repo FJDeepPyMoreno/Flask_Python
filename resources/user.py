@@ -16,7 +16,11 @@ class UserRegister(Resource):
     def post(self):     
         data = UserRegister.parser.parse_args()  
         if UserModel.find_by_username(data['username']):
-            return {"Message": "An user with this name already exists"}, 400               
+            return {"Message": "An user with this name already exists"}, 400
+        user = UserModel(**data)  # Recuerda que **data equivale a pasar los argumentos como:
+                                  # key1 = value1, key2 = value2, ..., keyN = valueN
+        user.save_to_db()
+
         connection = sqlite3.connect('data.db')
         cursor = connection.cursor()
         insert_query = "INSERT INTO users VALUES (NULL, ?,?)"
