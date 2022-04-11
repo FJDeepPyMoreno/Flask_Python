@@ -19,5 +19,5 @@ api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
 api.add_resource(UserRegister, '/register')
 
-if __name__ == "__main__":   # Con esto prevenimos que corra la app si se importan módulos o funciones de app_sqlite1.py
+if __name__ == "__main__":   # Con esto prevenimos que corra la app si se importan módulos o funciones de app.py
      app.run(port=5000)
