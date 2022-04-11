@@ -99,7 +99,7 @@ class ItemList(Resource):
         if rows:
             for r in rows:
                 items.append({'name':  r[0],
-                            'price': r[1]})
+                              'price': r[1]})
             return {'items' : items}
         else:
             return {'message': "Item list is empty"}, 404
