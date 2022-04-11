@@ -16,18 +16,6 @@ class ItemModel(db.Model):
                                                       #  SELECT * FROM items WHERE name=name LIMIT 1  
                                                       # Vemos que convierte directamente el registro de la base de datos en un objeto
                                                       # ItemModel
-
-
-        # Retrive from database .db:
-        # Comentamos estas líneas porque al introducir SQL Alchemy el proceso se simplifica bastante. 
-        # connection = sqlite3.connect('data.db')
-        # cursor     = connection.cursor()
-        # query      = "SELECT * FROM items WHERE name = ?"
-        # result     = cursor.execute(query, (name,))
-        # row        = result.fetchone()
-        # connection.close() # Observa que no hacemos 'commit' ya que no estamos modificando la base de datos.
-        # if row:
-        #     return cls(*row)
         
     def __init__(self, name, price):
         self.name  = name
@@ -42,24 +30,6 @@ class ItemModel(db.Model):
         db.session.add(self)   # SQL Alchemy translates objects to row
         db.session.commit()
 
-        # Al introducir SQL Alchemy comentamos estas líneas:
-
-        # connection = sqlite3.connect('data.db')
-        # cursor     = connection.cursor()
-        # query      = "INSERT INTO items VALUES (?, ?)"
-        # cursor.execute(query, (self.name, self.price))
-        # connection.commit()
-        # connection.close()
-
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()     
-
-    # def update(self):
-    #     connection = sqlite3.connect('data.db')
-    #     cursor     = connection.cursor()
-    #     query      = "UPDATE items SET price = ? WHERE name = ?"
-    #     cursor.execute(query, (self.price, self.name))
-    #     connection.commit()
-    #     connection.close()
-    #     return {'message': f'Item "{self.name}" was updated'}, 201    

@@ -52,14 +52,6 @@ class Item(Resource):
             item.delete_from_db()
 
         return {'Message': 'Item deleted.'}
-        # connection = sqlite3.connect('data.db')
-        # cursor     = connection.cursor()
-        # query      = "DELETE FROM items WHERE name = ?"
-        # cursor.execute(query, (name,))
-        # connection.commit()
-        # connection.close()
-        # return {'Message': 'Item deleted.'}               
-
 
 class ItemList(Resource):
     
