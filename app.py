@@ -6,6 +6,7 @@ from db import db
 from security import authenticate, identity
 from resources.user import UserRegister
 from resources.item import Item, ItemList
+from resources.store import Store, StoreList
 
 app                                          = Flask(__name__)
 app.secret_key                               = 'Paco3351'  # Esta línea debe estar para que '/auth' vaya bien.
@@ -20,11 +21,16 @@ jwt                                          = JWT(app, authenticate, identity)
 
 @app.before_first_request  # llama al método decorado antes del primer request que se haga de la app.
 def create_tables():
-     db.create_all()  # Crea el archivo data.db según la línea 12 de este script.
+     db.create_all()  # Crea el archivo data.db según la línea 13 de este script.
+                      # Este comando lee las tablas que se definen en los models: ItemModel, UserModel y StoreModel.
+                      # Aunque no los importamos directamente aquí, son leidos ya que sí importamos los resources, que a su
+                      # vez importan los models.
 
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
 api.add_resource(UserRegister, '/register')
+api.add_resource(Store, '/store/<string:name>')
+api.add_resource(StoreList, '/stores')
 
 if __name__ == "__main__":   # Con esto prevenimos que corra la app si se importan módulos o funciones de app.py
      db.init_app(app)

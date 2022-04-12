@@ -13,6 +13,11 @@ class Item(Resource):
                         help = "This field can not be left blank!")
     
     
+    parser.add_argument('store_id',
+                        type = int,
+                        required = True,
+                        help = "Every item needs a store id.")
+
     @jwt_required()   # We have to authenticate before we call the get method.
     def get(self, name):
         result = ItemModel.find_by_name(name)        
@@ -25,7 +30,7 @@ class Item(Resource):
         if ItemModel.find_by_name(name):
             return {'message' : 'An item with name  "{}" already exists'.format(name)}, 400
         data = Item.parser.parse_args()
-        item = ItemModel(name, data['price']) 
+        item = ItemModel(name, data['price'], data['store_id']) 
 
         try:
             item.save_to_db()
@@ -38,7 +43,7 @@ class Item(Resource):
         data        = Item.parser.parse_args()
         item        = ItemModel.find_by_name(name)
         if item is None:
-            item = ItemModel(name, data['price'])
+            item = ItemModel(name, data['price'], data['store_id'])
         else:
             item.price = data['price']
         item.save_to_db()
@@ -58,17 +63,4 @@ class ItemList(Resource):
     def get(self):
 
         return {'items': [item.json() for item in ItemModel.query.all()]}  
-        # connection = sqlite3.connect('data.db')
-        # cursor = connection.cursor()
-        # select_items = "SELECT * FROM items"
-        # result = cursor.execute(select_items)
-        # rows = result.fetchall()
-        # connection.close()
-        # items = []
-        # if rows:
-        #     for r in rows:
-        #         items.append({'name':  r[0],
-        #                       'price': r[1]})
-        #     return {'items' : items}
-        # else:
-        #     return {'message': "Item list is empty"}, 404
+       

@@ -1,4 +1,3 @@
-import sqlite3
 from db import db
 
 class ItemModel(db.Model):
@@ -8,6 +7,10 @@ class ItemModel(db.Model):
     id    = db.Column(db.Integer, primary_key = True)
     name  = db.Column(db.String(80))
     price = db.Column(db.Float(precision = 2))
+
+    store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+    store    = db.relationship('StoreModel')  # Un item solamente puede corresponder con un Store, luego esta variable
+                                              # es un StoreModel object.
     
     @classmethod
     def find_by_name(cls, name):
@@ -17,9 +20,10 @@ class ItemModel(db.Model):
                                                       # Vemos que convierte directamente el registro de la base de datos en un objeto
                                                       # ItemModel
         
-    def __init__(self, name, price):
-        self.name  = name
-        self.price = price
+    def __init__(self, name, price, store_id):
+        self.name     = name
+        self.price    = price
+        self.store_id = store_id
     
     def json(self):
     # Returns a json representation of the model.
