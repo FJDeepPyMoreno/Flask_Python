@@ -26,7 +26,7 @@ class ItemModel(db.Model):
         return {'name': self.name, 'price': self.price}
     
     #def insert(self):
-    def save_to_db(self): # con SQL Alchemy, las siguientes instrucciones valen tanto para actualizar como para insertar. 
+    def save_to_db(self):      
         db.session.add(self)   # SQL Alchemy translates objects to row
         db.session.commit()
 

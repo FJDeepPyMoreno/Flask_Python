@@ -18,6 +18,10 @@ jwt                                          = JWT(app, authenticate, identity)
                                                # It creates a new endpoint: '/auth'. This endpoint returns a JWT token.
                                                # We cand send this JWT totken to the next request we make.
 
+@app.before_first_request  # llama al método decorado antes del primer request que se haga de la app.
+def create_tables():
+     db.create_all()  # Crea el archivo data.db según la línea 12 de este script.
+
 api.add_resource(Item, '/item/<string:name>')
 api.add_resource(ItemList, '/items')
 api.add_resource(UserRegister, '/register')

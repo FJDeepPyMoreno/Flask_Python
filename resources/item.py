@@ -56,17 +56,19 @@ class Item(Resource):
 class ItemList(Resource):
     
     def get(self):
-        connection = sqlite3.connect('data.db')
-        cursor = connection.cursor()
-        select_items = "SELECT * FROM items"
-        result = cursor.execute(select_items)
-        rows = result.fetchall()
-        connection.close()
-        items = []
-        if rows:
-            for r in rows:
-                items.append({'name':  r[0],
-                              'price': r[1]})
-            return {'items' : items}
-        else:
-            return {'message': "Item list is empty"}, 404
+
+        return {'items': [item.json() for item in ItemModel.query.all()]}  
+        # connection = sqlite3.connect('data.db')
+        # cursor = connection.cursor()
+        # select_items = "SELECT * FROM items"
+        # result = cursor.execute(select_items)
+        # rows = result.fetchall()
+        # connection.close()
+        # items = []
+        # if rows:
+        #     for r in rows:
+        #         items.append({'name':  r[0],
+        #                       'price': r[1]})
+        #     return {'items' : items}
+        # else:
+        #     return {'message': "Item list is empty"}, 404

@@ -23,9 +23,8 @@ class UserModel(db.Model):
     @classmethod
     def find_by_id(cls, idu):
         return cls.query.filter_by(id=idu).first()     
-            
-    # Añadimos ahora los siguientes métodos tras la implementación con SQL Alchemy:
     
+            
     def save_to_db(self):
         db.session.add(self)
         db.session.commit()
