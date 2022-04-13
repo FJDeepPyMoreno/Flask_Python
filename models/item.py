@@ -4,13 +4,14 @@ class ItemModel(db.Model):
 
     __tablename__ = "items"
 
-    id    = db.Column(db.Integer, primary_key = True)
-    name  = db.Column(db.String(80))
-    price = db.Column(db.Float(precision = 2))
-
+    id       = db.Column(db.Integer, primary_key = True)
+    name     = db.Column(db.String(80))
+    price    = db.Column(db.Float(precision = 2))
     store_id = db.Column(db.Integer, db.ForeignKey('stores.id'))
+
     store    = db.relationship('StoreModel')  # Un item solamente puede corresponder con un Store, luego esta variable
-                                              # es un StoreModel object.
+                                              # es un StoreModel object. Es decir, es el 'StoreModel' que matchea con el 
+                                              # store_id.
     
     @classmethod
     def find_by_name(cls, name):

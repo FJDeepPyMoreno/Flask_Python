@@ -6,6 +6,7 @@ class StoreModel(db.Model):
 
     id    = db.Column(db.Integer, primary_key = True)
     name  = db.Column(db.String(80))
+    
     items = db.relationship('ItemModel', lazy='dynamic')  # Is a list of itemModel objects, puesto que un mismo Store puede corresponder
                                                           # a varios items
     # NOTA: Cada vez que creemos un Storemodel object se crearán tantos objetos ItemModel como macheos haya en la tabla 'items'
